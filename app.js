@@ -38,8 +38,8 @@ axios.interceptors.request.use(
 )
 
 axios.interceptors.response.use(
-  (request) => {
-    return this.response.data;
+  (response) => {
+    return response.data;
   },
   (error) => {
     console.log(error);

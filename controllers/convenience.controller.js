@@ -1,4 +1,4 @@
-const { holidays } = require("./services/convenience.service");
+const { holidays } = require("../services/convenience.service");
 
 module.exports = {
     availability: async (req, res) => {
@@ -6,7 +6,7 @@ module.exports = {
 
         let promises = [];
 
-        countries.array.forEach(country => {
+        countries.forEach(country => {
             let from = new Date(country.from).getFullYear();
             let to = new Date(country.to).getFullYear();
 
