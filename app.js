@@ -7,11 +7,10 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var app = express();
+var axios = require("axios").default;
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+var app = express();
+require("dotenv").config();
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -20,12 +19,33 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+axios.interceptors.request.use(
+  (request) => {
+    request.headers.ContentType = "application/json";
+    request.headers.Accept = "application/json";
+    return request;
+  },
+  (error) => {
+    console.log(error);
+    return Promise.reject(error);
+  }
+)
+
+axios.interceptors.response.use(
+  (request) => {
+    return this.response.data;
+  },
+  (error) => {
+    console.log(error);
+    return error.response.data;
+  }
+)
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -35,7 +55,10 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.send(req.get("origin"));
 });
 
-module.exports = app;
+const PORT = process.env.ACCESS_PORT || 9000;
+app.listen(PORT, function(){
+  console.log(`Running on ${PORT}`);
+});
